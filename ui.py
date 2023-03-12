@@ -5,7 +5,7 @@ import pyb
 import ssd1306
 
 # Display I2C
-i2c = machine.SoftI2C(scl=machine.Pin('D14'), sda=machine.Pin('D15'))
+i2c = machine.SoftI2C(scl=machine.Pin('D14'), sda=machine.Pin('D15'), freq=3600000)
 i2c.scan()
 # Display of 128*64 pixels
 oled = ssd1306.SSD1306_I2C(128, 64, i2c)
@@ -190,21 +190,21 @@ def change_mode():
 	global darkmode
 	if sw():
 		darkmode = not darkmode
-	while sw():
-		pass
+		while sw():
+			pass
 
 
 # DRAW MATRIX
 
-def draw(matrix, x, y, zoom=1):
+def draw(matrix, x, y, zoom=1, screen=oled):
 	for ind_y, i in enumerate(matrix):
 		for ind_x, j in enumerate(i):
 			for zx in range(zoom):
 				for zy in range(zoom):
 					if darkmode == True:
-						oled.pixel(x + zoom * ind_x + zx, y + zoom * ind_y + zy, not j)
+						screen.pixel(x + zoom * ind_x + zx, y + zoom * ind_y + zy, not j)
 					else:
-						oled.pixel(x + zoom * ind_x + zx, y + zoom * ind_y + zy, j)
+						screen.pixel(x + zoom * ind_x + zx, y + zoom * ind_y + zy, j)
 
 # DISPLAY TEXT PART
 
