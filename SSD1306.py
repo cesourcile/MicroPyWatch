@@ -2,6 +2,7 @@
 
 from micropython import const
 import framebuf
+import time
 
 
 # register definitions
@@ -94,15 +95,21 @@ class SSD1306(framebuf.FrameBuffer):
 
     def scroll(self, dx, dy):
         self.framebuf.scroll(dx, dy)
+        
+    def write_cmd(self, *_):
+        pass
+        
+    def write_data(self, *_):
+        pass
 
     def show(self):
         x0 = 0
         x1 = self.width - 1
-        if self.width != 128:
-            # narrow displays use centred columns
-            col_offset = (128 - self.width) // 2
-            x0 += col_offset
-            x1 += col_offset
+#       if self.width != 128:
+#           # narrow displays use centred columns
+#           col_offset = (128 - self.width) // 2
+#           x0 += col_offset
+#           x1 += col_offset
         self.write_cmd(SET_COL_ADDR)
         self.write_cmd(x0)
         self.write_cmd(x1)
@@ -110,6 +117,8 @@ class SSD1306(framebuf.FrameBuffer):
         self.write_cmd(0)
         self.write_cmd(self.pages - 1)
         self.write_data(self.buffer)
+        
+
 
 
 class SSD1306_I2C(SSD1306):
