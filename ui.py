@@ -5,7 +5,7 @@ import pyb
 import ssd1306
 
 # Display I2C
-i2c = machine.SoftI2C(scl=machine.Pin('D14'), sda=machine.Pin('D15'), freq=3600000)
+i2c = machine.SoftI2C(scl=machine.Pin('D14'), sda=machine.Pin('D15'))
 i2c.scan()
 # Display of 128*64 pixels
 oled = ssd1306.SSD1306_I2C(128, 64, i2c)
