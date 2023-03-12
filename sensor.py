@@ -1,6 +1,5 @@
 import time
 import ui
-import framebuf
 
 from machine import ADC, Pin
 
