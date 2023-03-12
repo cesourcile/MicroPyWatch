@@ -1,194 +1,110 @@
-# SENSOR PART
-
 import time
 import ui
-import pyb
-from pyb import LED
-from machine import Pin, ADC
+import framebuf
 
-global bpm, led, adc, buffer, c, limit, counter, lasts, lasts_limit, start_beat_time, last_beat_time, samples, no_samples, old_bpm, sw3, mean, sum_
+from machine import ADC, Pin
 
-# Pins, LED and others
-sw2 = pyb.Pin('SW2', Pin.IN, Pin.PULL_UP)
-sw3 = pyb.Pin('SW3', Pin.IN, Pin.PULL_UP)
-led = LED(1)
+global buffer, count_points, limit_points, mean, last_mean, last_mean_limit, last_heart_beat, draw_cursor, points_counter
+
 adc = ADC(Pin('A0'))
 
-# Variables
-
-sum_ = 0
-bpm = 0
-old_bpm = -3
-
-# Stockage of sensor's output
+# List of all the values of the sensor
 buffer = []
-# Counter of points and limit : store 'limit' points
-c = 0
-limit = 50
-counter = 0
 
-# Last stockage of sensor's output with 'lasts_limits' points
-lasts = []
-lasts_limit = 500
+# Counter of points and limit : we want to store a number of 'limit_points' points
+count_points = 0
+limit_points = 50
 
-# Start counting
-start_beat_time = time.ticks_ms()
-last_beat_time = 0
-
-# Samples for BPM calculation
-samples = []
-no_samples = 10
-
-# Intervall of 10 seconds
-old_time = time.time()
-
-# Mean
+# Calculated mean of the points
 mean = 0
 
-# Tests
-# timer = pyb.Timer(1)
-# timer.init(freq=10, callback=clock)
+# List of the lasts means of the value
+last_mean = []
+# We want to store a number of 'last_mean_limit' means in the last_mean
+last_mean_limit = 50
+
+# The last time the heart beat
+last_heart_beat = 0
+
+ssd_buffer = ui.ssd1306.SSD1306(10, 64,
+                                None)  # Init a "fake" SSD1306  only 10 pixels wide (1 for plot, 9 for "blank-ahead")
+ssd_buffer_text = ui.ssd1306.SSD1306(32, 64, None)
+
+draw_cursor = 0
+points_counter = 0
+
 
 def sensor():
-    global bpm, led, adc, buffer, c, limit, counter, lasts, lasts_limit, start_beat_time,  last_beat_time, samples, no_samples, sw3
+    global buffer, count_points, limit_points, mean, last_mean, last_mean_limit, last_heart_beat, draw_cursor, points_counter
 
-    mean = 0
+    darkmode = ui.darkmode
+    color = not darkmode
+
+    val = adc.read_u16()
 
     # Reading value of the sensor
-    buffer.append(adc.read_u16())
+    buffer.append(val)
+    # We add one value to the list so we add a point
+    count_points += 1
 
-    c += 1
-    if c >= limit:
-        
-        mean = sum(buffer) // limit
-        c = 0
-        buffer = []
-        print('mean :', mean)
+    if count_points >= limit_points:
+        # We calculate the mean of the points
+        mean = sum(buffer) // limit_points
+        # print("mean:", mean)
+        # We pop the first value we know
+        buffer.pop(0)
+        # We have a point to count down
+        count_points -= 1
 
-        for i in lasts:
-            if (mean - i) > 1000 and (time.ticks_ms() - last_beat_time) > 200:
+        points_counter += 1
+        if points_counter > 10:
+            plt = int((mean % 6000) / 6000 * 60)  # This line still needs a bit of workout
+            ssd_buffer.pixel(0, 62 - plt, not color)
 
-                # Calculate BPM
-                total_time = time.ticks_ms() - start_beat_time
-                bpm = int(60000 / total_time * counter)
+            #### SMART SHOW ####
+            # Draw the buffer of the fake screen on the real screen.
+            ui.oled.write_cmd(ui.ssd1306.SET_COL_ADDR)  # "Here is the width of the buffer I'm gonna send you"
+            ui.oled.write_cmd(draw_cursor)  # "You are going to draw the buffer from this column..."
+            ui.oled.write_cmd(draw_cursor + 9)  # "... and it's gonna end at this column " (+ 9 because the fake buffer is 10 pixels wide)
+            ui.oled.write_cmd(ui.ssd1306.SET_PAGE_ADDR)  # Same but for rows (not really rows, but "pages" = groups of 8 rows)
+            ui.oled.write_cmd(0)
+            ui.oled.write_cmd(7)
+            ui.oled.write_data(ssd_buffer.buffer)  # "And here is the buffer:" but it's actually the buffer of the fake screen
 
-                # oled.text('pulse', bpm)
-                print(bpm)
+            ssd_buffer.fill(color)  # Clear the fake screen buffer
 
-                # Affichage pour le bpm
-                #ui.draw(ui.empty_heart, 15, 21, 3)
-                #ui.smart_text(ui.oled, str(bpm), 15, 40, not color)
+            draw_cursor = (draw_cursor + 1) % 87
+            points_counter = 0
 
-                # Reset and exit loop
-                last_beat_time = time.ticks_ms()
-                counter += 1
-                lasts = []
-                break
+    if len(last_mean) > last_mean_limit:
+        last_mean.pop(0)
+    last_mean.append(mean)
 
-        #ui.oled.show()
+    ind_m = -1
+    for m in last_mean:
+        ind_m += 1
 
-        # led.off()
-        # oled.text('Pulse', 0, 0, 1)
-        # oled.show()
+        if (time.ticks_ms() - last_heart_beat) > 200 and (mean - m) > 100:
+            # Exchange new beats time
+            start_heart_beat = last_heart_beat
+            last_heart_beat = time.ticks_ms()
+            # Calculus of the period between two heartbeats
+            period_one_beat = last_heart_beat - start_heart_beat
+            bpm = 60000 // period_one_beat
+            if bpm < 150:
+                print('bpm: ', bpm, 'mean:', mean, 'm:', m)
 
-        if len(lasts) >= lasts_limit:
-            lasts.pop()
-        lasts.insert(0, mean)
+                # Writing the bpm
+                ssd_buffer_text.fill(color)
+                ssd_buffer_text.text("BPM", 0, 10, not color)
+                ssd_buffer_text.text(str(bpm), 0, 25, not color)
+                ui.draw(ui.empty_heart, 7, 40, zoom=2, screen=ssd_buffer_text)
 
-    return [bpm, mean]
+                ui.oled.write_cmd(ui.ssd1306.SET_COL_ADDR)
+                ui.oled.write_cmd(96)
+                ui.oled.write_cmd(127)
+                ui.oled.write_cmd(ui.ssd1306.SET_PAGE_ADDR)
+                ui.oled.write_cmd(0)
+                ui.oled.write_cmd(7)
 
-def sensor_interface():
-    global bpm, old_bpm
-
-    darkmode = ui.darkmode
-    color = not darkmode
-
-    bpm = sensor()[0]
-    if bpm != old_bpm:
-        ui.oled.fill(color)
-        ui.draw(ui.empty_heart, 15, 21, 3)
-        ui.smart_text(ui.oled, str(bpm), 50, 25, not color)
-        ui.oled.show()
-    old_bpm = bpm
-
-def sensor_plot_interface():
-    global bpm, old_bpm
-    
-    darkmode = ui.darkmode
-    color = not darkmode
-    
-    bpm = sensor()[0]
-    mean = sensor()[1]
-    
-    ui.oled.pixel()
-
-def sensor_2():
-    global bpm, old_bpm, lasts, start_beat_time, counter, c, old_time, mean, last_beat_time, sum_, limit
-
-    # Affichage
-    darkmode = ui.darkmode
-    color = not darkmode
-
-    # Premier affichage
-    if old_bpm == -3 :
-        ui.oled.fill(color)
-        ui.draw(ui.empty_heart, 15, 21, 3)
-        ui.smart_text(ui.oled, "Calcul...", 50, 25, not color)
-        ui.oled.show()
-    
-
-
-    # Period of time of 10 seconds
-    while time.time() - old_time < 10:
-
-        # Reading value of the sensor
-        val = adc.read_u16()
-        sum_ += val
-
-        # Mean of the sensor's value
-        c += 1
-        if c >= limit:
-            print(sum_, val)
-            mean = sum_ // limit
-            c = 0
-            sum_ = 0
-            #print('mean :', mean)
-
-            for i in lasts:
-                if (mean - i) > 1000 and (time.ticks_ms() - last_beat_time) > 200:
-                    # Calculate BPM
-                    total_time = time.ticks_ms() - start_beat_time
-                    bpm = int(60000 / total_time * counter)
-
-                    # oled.text('pulse', bpm)
-                    print(bpm)
-
-                    # Reset and exit loop
-                    last_beat_time = time.ticks_ms()
-                    counter += 1
-                    lasts = []
-                    break
-
-                # oled.text('Pulse', 0, 0, 1)
-                # oled.show()
-
-            if len(lasts) >= lasts_limit:
-                lasts.pop()
-            lasts.insert(0, mean)
-
-    # Reset toutes les variables
-    samples = []
-    sum_ = 0
-    c = 0
-    counter = 0
-    last_beat_time = 0
-    old_time = time.time()
-
-
-    if bpm != old_bpm:
-        ui.oled.fill(color)
-        ui.draw(ui.empty_heart, 15, 21, 3)
-        ui.smart_text(ui.oled, str(bpm), 50, 25, not color)
-        ui.oled.show()
-    old_bpm = bpm
-
+                ui.oled.write_data(ssd_buffer_text.buffer)
