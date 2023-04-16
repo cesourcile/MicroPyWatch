@@ -42,3 +42,5 @@ We can play Pong against the watch. To go up, press the SW1 button and to go dow
 - RTC DS3231
 
 <img src="https://user-images.githubusercontent.com/98766071/224575455-e40069f1-5906-4afe-b3d2-5c1189ed64a4.png" height="600"/>
+
+If you want a full video, [click here](https://www.youtube.com/watch?v=hz2rFPbbD6Q) !
