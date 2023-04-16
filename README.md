@@ -26,7 +26,7 @@ To choose the menu, we can re-press the SW2 button.
 ## BPM sensor
 We can measure our BPM with the heartbeat sensor and see the plot of it.
 
-<img src="https://user-images.githubusercontent.com/98766071/232329779-1988462b-426c-4e95-be66-02e4ae4d9ffe.png" height="1000"/>
+<img src="https://user-images.githubusercontent.com/98766071/232329779-1988462b-426c-4e95-be66-02e4ae4d9ffe.png" height="800"/>
 
 
 ## Pong
