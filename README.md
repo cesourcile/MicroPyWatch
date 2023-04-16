@@ -11,6 +11,7 @@ Functionnalities :
 
 ## Theme
 To change the theme of the smart watch, we can press the SW1 button. There is a light and a dark theme.
+![image](https://user-images.githubusercontent.com/98766071/232327819-10071014-0b68-4035-b5e0-416422787a02.png)
 
 ## Menu
 To change the screens of the smart watch, there is a menu we can access by pressing the SW2 button.
