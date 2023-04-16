@@ -32,6 +32,9 @@ We can measure our BPM with the heartbeat sensor and see the plot of it.
 ## Pong
 We can play Pong against the watch. To go up, press the SW1 button and to go down, press the SW3 button.
 
+<img src="https://user-images.githubusercontent.com/98766071/232332380-4ed7e51d-f261-40c1-8cb8-4d86e31fd354.png" height="500"/>
+
+
 ## Hardware :
 - STM32WB Nucleo Board
 - Display I2C
