@@ -12,7 +12,7 @@ Functionnalities :
 ## Theme
 To change the theme of the smart watch, we can press the SW1 button. There is a light and a dark theme.
 
-<img src="https://user-images.githubusercontent.com/98766071/232327898-08474596-7cc4-4385-9ba4-88aff80bbaff.png" height="500"/>
+<img src="https://user-images.githubusercontent.com/98766071/232327898-08474596-7cc4-4385-9ba4-88aff80bbaff.png" height="600"/>
 
 ## Menu
 To change the screens of the smart watch, there is a menu we can access by pressing the SW2 button.
@@ -21,7 +21,7 @@ To browse the menu, we can press the SW3 button.
 
 To choose the menu, we can re-press the SW2 button.
 
-<img src="https://user-images.githubusercontent.com/98766071/232328408-4c7c4560-f85a-4694-b289-fb2df1f7a8c4.png" height="500"/>
+<img src="https://user-images.githubusercontent.com/98766071/232328408-4c7c4560-f85a-4694-b289-fb2df1f7a8c4.png" height="600"/>
 
 ## BPM sensor
 We can measure our BPM with the heartbeat sensor and see the plot of it.
@@ -35,5 +35,4 @@ We can play Pong against the watch. To go up, press the SW1 button and to go dow
 - Sensor Heartbeat Analog KY039
 - RTC DS3231
 
-![image](https://user-images.githubusercontent.com/98766071/224575455-e40069f1-5906-4afe-b3d2-5c1189ed64a4.png)
-
+<img src="https://user-images.githubusercontent.com/98766071/224575455-e40069f1-5906-4afe-b3d2-5c1189ed64a4.png" height="600"/>
