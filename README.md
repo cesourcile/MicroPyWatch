@@ -1,18 +1,31 @@
 # MicroPyWatch
+## Sports and Game project
 
 Project of a smart watch which can calculate BPM.
 
 Functionnalities :
 - a digital and an analog clock accurate to the nearest millisecond with the date ;
 - a BPM sensor whose graphic can be plotted with the calculus of the BPM in real-time ;
-- a "darkmode" button, that can change the theme from light to dark and vice-versa.
+- a "darkmode" button, that can change the theme from light to dark and vice-versa ;
+- a Pong game.
 
-To change the theme of the smart watch, we can press the SW1 button.
+## Theme
+To change the theme of the smart watch, we can press the SW1 button. There is a light and a dark theme.
 
-To change the screens of the smart watch, we can press the SW2 button. 
+## Menu
+To change the screens of the smart watch, there is a menu we can access by pressing the SW2 button.
 
+To browse the menu, we can press the SW3 button.
 
-Hardware :
+To choose the menu, we can re-press the SW2 button.
+
+## BPM sensor
+We can measure our BPM with the heartbeat sensor and see the plot of it.
+
+## Pong
+We can play Pong against the watch. To go up, press the SW1 button and to go down, press the SW3 button.
+
+## Hardware :
 - STM32WB Nucleo Board
 - Display I2C
 - Sensor Heartbeat Analog KY039
