@@ -1,5 +1,6 @@
 import time
 import ui
+import framebuf
 
 from machine import ADC, Pin
 
@@ -25,17 +26,19 @@ last_mean_limit = 50
 # The last time the heart beat
 last_heart_beat = 0
 
-ssd_buffer = ui.ssd1306.SSD1306(10, 64,
-                                None)  # Init a "fake" SSD1306  only 10 pixels wide (1 for plot, 9 for "blank-ahead")
+ssd_buffer = ui.ssd1306.SSD1306(10, 64, None)  # Init a "fake" SSD1306  only 10 pixels wide (1 for plot, 9 for "blank-ahead")
 ssd_buffer_text = ui.ssd1306.SSD1306(32, 64, None)
 
 draw_cursor = 0
 points_counter = 0
 
-
 def sensor():
+    """
+    Function that displays the plot of the sensor, calculate the BPM of the person and display it.
+    """
     global buffer, count_points, limit_points, mean, last_mean, last_mean_limit, last_heart_beat, draw_cursor, points_counter
 
+    # Set the good color depending on darkmode
     darkmode = ui.darkmode
     color = not darkmode
 
@@ -107,3 +110,17 @@ def sensor():
                 ui.oled.write_cmd(7)
 
                 ui.oled.write_data(ssd_buffer_text.buffer)
+
+def before_sensor():
+    """
+    Function to display a menu before the plot to explain operating instructions.
+    """
+    ui.oled.fill(not ui.darkmode)
+    ui.oled.text("Veuillez placer", 0, 4, ui.darkmode)
+    ui.oled.text("votre doigt sur", 0, 16, ui.darkmode)
+    ui.oled.text("le capteur afin", 0, 28, ui.darkmode)
+    ui.oled.text("de calculer", 0, 40, ui.darkmode)
+    ui.oled.text("votre BPM.", 0, 52, ui.darkmode)
+    ui.oled.show()
+    
+    
