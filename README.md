@@ -22,6 +22,8 @@ To browse the menu, we can press the SW3 button.
 
 To choose the menu, we can re-press the SW2 button.
 
+![image](https://user-images.githubusercontent.com/98766071/232328408-4c7c4560-f85a-4694-b289-fb2df1f7a8c4.png)
+
 ## BPM sensor
 We can measure our BPM with the heartbeat sensor and see the plot of it.
 
