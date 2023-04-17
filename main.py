@@ -27,8 +27,6 @@ number_of_screens = 5
 # SW2 switch to display the menu
 sw2 = pyb.Pin('SW2', machine.Pin.IN, machine.Pin.PULL_UP)
 
-#adc = ADC(Pin('A0'))
-
 # Start of the clock application
 ui.oled.fill(not ui.darkmode)
 ui.smart_text(ui.oled, "MICROPY", (128 - len("MICROPY") * 8) // 2, 16, ui.darkmode)
